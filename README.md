@@ -1,0 +1,26 @@
+# Schedule Management System
+
+Project layout uses:
+- `server/` for the backend gRPC service
+- `client/` for the frontend app
+- `envoy/` for gRPC-Web proxy configuration
+
+## Structure
+
+- `server/`: Go service, domain logic, repository layer, and proto files.
+- `client/`: React + Vite UI with gRPC client stubs/hooks.
+- `envoy/`: Envoy config to expose gRPC service to browser clients.
+- `docker-compose.yml`: local multi-service orchestration.
+- `DECISIONS.md`: architecture and tradeoff notes.
+
+## Local Run (Docker Compose)
+
+```bash
+docker compose up --build
+```
+
+Expected endpoints:
+- Client: `http://localhost:5173`
+- Envoy gRPC-Web: `http://localhost:8080`
+- Envoy admin: `http://localhost:9901`
+- Server gRPC: `localhost:50051`
