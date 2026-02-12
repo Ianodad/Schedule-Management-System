@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package appointment.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Appointment {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string description = 4;
+  google.protobuf.Timestamp start_time = 5;
+  google.protobuf.Timestamp end_time = 6;
+  string location = 7;
+  repeated string attendees = 8;
+  AppointmentStatus status = 9;
+  RecurrenceRule recurrence = 10;
+  google.protobuf.Timestamp created_at = 11;
+  google.protobuf.Timestamp updated_at = 12;
+  int64 version = 13;
+}
+
+enum AppointmentStatus {
+  APPOINTMENT_STATUS_UNSPECIFIED = 0;
+  APPOINTMENT_STATUS_SCHEDULED = 1;
+  APPOINTMENT_STATUS_CANCELLED = 2;
+  APPOINTMENT_STATUS_COMPLETED = 3;
+}
+
+message RecurrenceRule {
+  RecurrenceFrequency frequency = 1;
+  int32 interval = 2;
+  google.protobuf.Timestamp until = 3;
+  int32 count = 4;
+}
+
+enum RecurrenceFrequency {
+  RECURRENCE_FREQUENCY_UNSPECIFIED = 0;
+  RECURRENCE_FREQUENCY_DAILY = 1;
+  RECURRENCE_FREQUENCY_WEEKLY = 2;
+  RECURRENCE_FREQUENCY_MONTHLY = 3;
+}
+
+message ConflictInfo {
+  repeated Appointment conflicting_appointments = 1;
+  string message = 2;
+}
+
+service AppointmentService {
+  rpc CreateAppointment(CreateAppointmentRequest) returns (CreateAppointmentResponse);
+  rpc GetAppointment(GetAppointmentRequest) returns (GetAppointmentResponse);
+  rpc ListAppointments(ListAppointmentsRequest) returns (ListAppointmentsResponse);
+  rpc UpdateAppointment(UpdateAppointmentRequest) returns (UpdateAppointmentResponse);
+  rpc DeleteAppointment(DeleteAppointmentRequest) returns (DeleteAppointmentResponse);
+  rpc CheckConflicts(CheckConflictsRequest) returns (CheckConflictsResponse);
+  rpc StreamAppointments(StreamAppointmentsRequest) returns (stream AppointmentEvent);
+}
+
+message CreateAppointmentRequest {
+  string user_id = 1;
+  string title = 2;
+  string description = 3;
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  string location = 6;
+  repeated string attendees = 7;
+  RecurrenceRule recurrence = 8;
+}
+
+message CreateAppointmentResponse {
+  Appointment appointment = 1;
+  ConflictInfo conflicts = 2;
+}
+
+message GetAppointmentRequest {
+  string id = 1;
+}
+
+message GetAppointmentResponse {
+  Appointment appointment = 1;
+}
+
+message ListAppointmentsRequest {
+  string user_id = 1;
+  google.protobuf.Timestamp from = 2;
+  google.protobuf.Timestamp to = 3;
+  AppointmentStatus status = 4;
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListAppointmentsResponse {
+  repeated Appointment appointments = 1;
+}
+
+message UpdateAppointmentRequest {
+  Appointment appointment = 1;
+}
+
+message UpdateAppointmentResponse {
+  Appointment appointment = 1;
+  ConflictInfo conflicts = 2;
+}
+
+message DeleteAppointmentRequest {
+  string id = 1;
+}
+
+message DeleteAppointmentResponse {}
+
+message CheckConflictsRequest {
+  string user_id = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  string exclude_id = 4;
+}
+
+message CheckConflictsResponse {
+  ConflictInfo conflicts = 1;
+}
+
+message StreamAppointmentsRequest {
+  string user_id = 1;
+}
+
+message AppointmentEvent {
+  enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0;
+    EVENT_TYPE_CREATED = 1;
+    EVENT_TYPE_UPDATED = 2;
+    EVENT_TYPE_DELETED = 3;
+  }
+
+  EventType type = 1;
+  Appointment appointment = 2;
+}
