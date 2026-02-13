@@ -138,6 +138,34 @@ function AppointmentFormFields({
             disabled={formState.recurrence === 'none'}
           />
         </label>
+
+        <label>
+          Count
+          <input
+            type="number"
+            min={1}
+            max={100}
+            value={formState.recurrenceCount}
+            onChange={(event) =>
+              onChange({ ...formState, recurrenceCount: event.target.value })
+            }
+            disabled={formState.recurrence === 'none'}
+            placeholder="e.g. 5"
+          />
+        </label>
+
+        <label>
+          Until
+          <input
+            type="date"
+            value={formState.recurrenceUntil}
+            onChange={(event) =>
+              onChange({ ...formState, recurrenceUntil: event.target.value })
+            }
+            disabled={formState.recurrence === 'none'}
+            min={formState.date}
+          />
+        </label>
       </div>
     </>
   )

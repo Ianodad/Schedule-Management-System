@@ -12,6 +12,8 @@ function buildFormState(date: string, startTime: string, endTime: string): Appoi
     attendees: '',
     recurrence: 'none',
     recurrenceInterval: '1',
+    recurrenceCount: '',
+    recurrenceUntil: '',
   }
 }
 

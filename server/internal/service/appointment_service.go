@@ -77,10 +77,12 @@ func (s *AppointmentService) CreateAppointment(ctx context.Context, appt domain.
 		return domain.Appointment{}, nil, fmt.Errorf("creating appointment: %w", err)
 	}
 
-	// Handle recurring appointments
+	// Generate recurring appointment instances via the database function
 	if created.Recurrence != nil {
-		// Generate recurring instances (handled by database function)
-		// This is a simplified approach - in production you might want more control
+		_, err := s.repo.GenerateRecurringInstances(ctx, created)
+		if err != nil {
+			return created, conflicts, fmt.Errorf("generating recurring instances: %w", err)
+		}
 	}
 
 	return created, conflicts, nil
@@ -153,10 +155,15 @@ func (s *AppointmentService) UpdateAppointment(ctx context.Context, appt domain.
 	return updated, conflicts, nil
 }
 
-// DeleteAppointment deletes an appointment
+// DeleteAppointment deletes an appointment and any child recurring instances
 func (s *AppointmentService) DeleteAppointment(ctx context.Context, id string) error {
 	if id == "" {
 		return fmt.Errorf("appointment ID is required")
+	}
+
+	// Delete child recurring instances first
+	if err := s.repo.DeleteByParent(ctx, id); err != nil {
+		return fmt.Errorf("deleting recurring instances: %w", err)
 	}
 
 	err := s.repo.Delete(ctx, id)

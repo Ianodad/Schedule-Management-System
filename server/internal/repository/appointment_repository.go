@@ -19,7 +19,9 @@ type AppointmentRepository interface {
 	ListByUser(ctx context.Context, userID string, filter domain.AppointmentFilter) ([]domain.Appointment, error)
 	Update(ctx context.Context, appt domain.Appointment) (domain.Appointment, error)
 	Delete(ctx context.Context, id string) error
+	DeleteByParent(ctx context.Context, parentID string) error
 	CheckConflicts(ctx context.Context, userID string, start, end time.Time, excludeID *string) ([]domain.Appointment, error)
+	GenerateRecurringInstances(ctx context.Context, appt domain.Appointment) (int, error)
 }
 
 type appointmentRepository struct {
@@ -223,6 +225,56 @@ func (r *appointmentRepository) Delete(ctx context.Context, id string) error {
 		return domain.ErrAppointmentNotFound
 	}
 	return nil
+}
+
+func (r *appointmentRepository) DeleteByParent(ctx context.Context, parentID string) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM appointments WHERE parent_appointment_id = $1`, parentID)
+	if err != nil {
+		return mapPGError(err)
+	}
+	return nil
+}
+
+func (r *appointmentRepository) GenerateRecurringInstances(ctx context.Context, appt domain.Appointment) (int, error) {
+	if appt.Recurrence == nil {
+		return 0, nil
+	}
+
+	frequency := string(appt.Recurrence.Frequency)
+	interval := appt.Recurrence.Interval
+	if interval <= 0 {
+		interval = 1
+	}
+
+	var until *time.Time
+	var count *int32
+	if appt.Recurrence.Until != nil {
+		until = appt.Recurrence.Until
+	}
+	if appt.Recurrence.Count != nil {
+		count = appt.Recurrence.Count
+	}
+
+	var instancesCreated int
+	err := r.pool.QueryRow(ctx,
+		`SELECT generate_recurring_instances($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+		appt.ID,
+		appt.UserID,
+		appt.Title,
+		appt.Description,
+		appt.StartTime,
+		appt.EndTime,
+		nullIfEmpty(appt.Location),
+		appt.Attendees,
+		frequency,
+		interval,
+		until,
+		count,
+	).Scan(&instancesCreated)
+	if err != nil {
+		return 0, mapPGError(err)
+	}
+	return instancesCreated, nil
 }
 
 func (r *appointmentRepository) CheckConflicts(ctx context.Context, userID string, start, end time.Time, excludeID *string) ([]domain.Appointment, error) {

@@ -60,6 +60,14 @@ func (m *mockRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
+func (m *mockRepository) DeleteByParent(ctx context.Context, parentID string) error {
+	return nil
+}
+
+func (m *mockRepository) GenerateRecurringInstances(ctx context.Context, appt domain.Appointment) (int, error) {
+	return 0, nil
+}
+
 func (m *mockRepository) CheckConflicts(ctx context.Context, userID string, start, end time.Time, excludeID *string) ([]domain.Appointment, error) {
 	if m.conflictFunc != nil {
 		return m.conflictFunc(ctx, userID, start, end, excludeID)

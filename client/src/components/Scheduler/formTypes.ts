@@ -10,4 +10,6 @@ export interface AppointmentFormState {
   attendees: string
   recurrence: RecurrenceOption
   recurrenceInterval: string
+  recurrenceCount: string
+  recurrenceUntil: string
 }

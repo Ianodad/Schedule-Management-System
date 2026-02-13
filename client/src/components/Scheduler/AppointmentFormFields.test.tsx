@@ -16,11 +16,13 @@ function createFormState(
     attendees: '',
     recurrence,
     recurrenceInterval: '1',
+    recurrenceCount: '',
+    recurrenceUntil: '',
   }
 }
 
 describe('AppointmentFormFields', () => {
-  it('disables interval input when repeat is none', () => {
+  it('disables recurrence inputs when repeat is none', () => {
     render(
       <AppointmentFormFields
         formState={createFormState('none')}
@@ -28,8 +30,10 @@ describe('AppointmentFormFields', () => {
       />,
     )
 
-    const intervalInput = screen.getByRole('spinbutton')
-    expect(intervalInput).toBeDisabled()
+    const spinButtons = screen.getAllByRole('spinbutton')
+    for (const input of spinButtons) {
+      expect(input).toBeDisabled()
+    }
   })
 
   it('emits changed recurrence value', async () => {

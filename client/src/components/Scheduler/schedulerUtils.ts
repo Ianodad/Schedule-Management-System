@@ -48,6 +48,8 @@ export function createInitialFormState(selectedDate: Date): AppointmentFormState
     attendees: '',
     recurrence: 'none',
     recurrenceInterval: '1',
+    recurrenceCount: '',
+    recurrenceUntil: '',
   }
 }
 
@@ -59,9 +61,17 @@ export function createFormStateFromAppointment(
 
   let recurrence: AppointmentFormState['recurrence'] = 'none'
   let recurrenceInterval = '1'
+  let recurrenceCount = ''
+  let recurrenceUntil = ''
 
   if (appointment.recurrence) {
     recurrenceInterval = String(appointment.recurrence.interval || 1)
+    if (appointment.recurrence.count != null) {
+      recurrenceCount = String(appointment.recurrence.count)
+    }
+    if (appointment.recurrence.until != null) {
+      recurrenceUntil = toLocalDateString(toDate(appointment.recurrence.until))
+    }
     switch (appointment.recurrence.frequency) {
       case RecurrenceFrequency.DAILY:
         recurrence = 'daily'
@@ -87,6 +97,8 @@ export function createFormStateFromAppointment(
     attendees: (appointment.attendees ?? []).join(', '),
     recurrence,
     recurrenceInterval,
+    recurrenceCount,
+    recurrenceUntil,
   }
 }
 
@@ -152,8 +164,19 @@ export function recurrenceFromForm(
     frequency = RecurrenceFrequency.MONTHLY
   }
 
-  return {
-    frequency,
-    interval,
+  const rule: RecurrenceRule = { frequency, interval }
+
+  const parsedCount = Number.parseInt(formState.recurrenceCount, 10)
+  if (Number.isFinite(parsedCount) && parsedCount > 0) {
+    rule.count = parsedCount
   }
+
+  if (formState.recurrenceUntil) {
+    const untilDate = new Date(formState.recurrenceUntil + 'T23:59:59')
+    if (!Number.isNaN(untilDate.getTime())) {
+      rule.until = untilDate
+    }
+  }
+
+  return rule
 }
