@@ -31,6 +31,9 @@ func NewServer(port string, handler *AppointmentHandler) (*Server, error) {
 			interceptors.LoggingInterceptor(),
 			interceptors.ErrorHandlingInterceptor(),
 		),
+		grpc.ChainStreamInterceptor(
+			interceptors.StreamLoggingInterceptor(),
+		),
 	)
 
 	// Register appointment service

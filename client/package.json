@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "proto:generate": "grpc_tools_node_protoc --proto_path=../server/proto/appointment/v1 --js_out=import_style=commonjs,binary:./src/generated/appointment/v1 --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/generated/appointment/v1 --plugin=protoc-gen-grpc-web=$(which protoc-gen-grpc-web) appointment.proto"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

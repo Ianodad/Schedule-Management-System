@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type {
   Appointment,
   ConflictInfo,
 } from './types/appointment'
 import { useAppointments } from './hooks/useAppointments'
+import { useRealtimeUpdates } from './hooks/useRealtimeUpdates'
+import { EventType } from './api/grpc/types'
+import type { AppointmentEvent } from './api/grpc/types'
 import CalendarPanel from './components/Scheduler/CalendarPanel'
 import AgendaPanel from './components/Scheduler/AgendaPanel'
 import CreateModal from './components/Scheduler/CreateModal'
@@ -25,11 +28,23 @@ function App() {
     appointments,
     loading,
     error,
+    loadAppointments,
     createAppointment,
     updateAppointment,
     deleteAppointment,
     checkConflicts,
   } = useAppointments()
+
+  const USER_ID = import.meta.env.VITE_USER_ID || 'demo-user'
+
+  // Real-time streaming: reload appointments when backend events arrive
+  const handleStreamEvent = useCallback(
+    (_event: AppointmentEvent) => {
+      loadAppointments()
+    },
+    [loadAppointments],
+  )
+  useRealtimeUpdates(USER_ID, handleStreamEvent)
 
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(

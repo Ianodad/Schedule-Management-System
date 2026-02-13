@@ -49,3 +49,12 @@ type AppointmentFilter struct {
 	Limit  int32
 	Offset int32
 }
+
+type AppointmentEvent struct {
+	ID            int64
+	AppointmentID string
+	UserID        string
+	EventType     string
+	EventData     []byte
+	CreatedAt     time.Time
+}

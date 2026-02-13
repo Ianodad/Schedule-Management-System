@@ -37,9 +37,11 @@ func main() {
 
 	// Initialize repository layer
 	appointmentRepo := repository.NewAppointmentRepository(pool)
+	eventRepo := repository.NewEventRepository(pool)
 
 	// Initialize service layer
 	appointmentService := service.NewAppointmentService(appointmentRepo)
+	appointmentService.SetEventRepository(eventRepo)
 
 	// Initialize gRPC handler
 	grpcHandler := grpcserver.NewAppointmentHandler(appointmentService)

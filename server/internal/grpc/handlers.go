@@ -2,7 +2,10 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -190,11 +193,123 @@ func (h *AppointmentHandler) CheckConflicts(ctx context.Context, req *pb.CheckCo
 	}, nil
 }
 
-// StreamAppointments streams appointment updates (stub for now)
+// StreamAppointments streams appointment updates by polling the appointment_events table
 func (h *AppointmentHandler) StreamAppointments(req *pb.StreamAppointmentsRequest, stream pb.AppointmentService_StreamAppointmentsServer) error {
-	// This would be implemented with database event polling or Redis pub/sub
-	// For now, return unimplemented
-	return status.Error(codes.Unimplemented, "streaming not yet implemented")
+	if req.UserId == "" {
+		return status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	var lastEventID int64
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+
+	log.Printf("[STREAM] client connected: user_id=%s", req.UserId)
+
+	for {
+		select {
+		case <-stream.Context().Done():
+			log.Printf("[STREAM] client disconnected: user_id=%s", req.UserId)
+			return nil
+		case <-ticker.C:
+			events, err := h.service.GetEventsSince(stream.Context(), req.UserId, lastEventID, 50)
+			if err != nil {
+				log.Printf("[STREAM] error fetching events: %v", err)
+				continue
+			}
+
+			for _, evt := range events {
+				apptEvent, convertErr := eventToProto(evt)
+				if convertErr != nil {
+					log.Printf("[STREAM] error converting event %d: %v", evt.ID, convertErr)
+					continue
+				}
+
+				if err := stream.Send(apptEvent); err != nil {
+					log.Printf("[STREAM] error sending event: %v", err)
+					return err
+				}
+
+				lastEventID = evt.ID
+			}
+		}
+	}
+}
+
+// eventToProto converts a domain AppointmentEvent to a protobuf AppointmentEvent
+func eventToProto(evt domain.AppointmentEvent) (*pb.AppointmentEvent, error) {
+	var eventType pb.AppointmentEvent_EventType
+	switch evt.EventType {
+	case "CREATED":
+		eventType = pb.AppointmentEvent_EVENT_TYPE_CREATED
+	case "UPDATED":
+		eventType = pb.AppointmentEvent_EVENT_TYPE_UPDATED
+	case "DELETED":
+		eventType = pb.AppointmentEvent_EVENT_TYPE_DELETED
+	default:
+		eventType = pb.AppointmentEvent_EVENT_TYPE_UNSPECIFIED
+	}
+
+	// Parse the JSONB event_data into an appointment
+	var raw struct {
+		ID                  string    `json:"id"`
+		UserID              string    `json:"user_id"`
+		Title               string    `json:"title"`
+		Description         string    `json:"description"`
+		StartTime           time.Time `json:"start_time"`
+		EndTime             time.Time `json:"end_time"`
+		Location            *string   `json:"location"`
+		Status              string    `json:"status"`
+		CreatedAt           time.Time `json:"created_at"`
+		UpdatedAt           time.Time `json:"updated_at"`
+		Version             int64     `json:"version"`
+		RecurrenceFrequency *string   `json:"recurrence_frequency"`
+		RecurrenceInterval  *int32    `json:"recurrence_interval"`
+		RecurrenceUntil     *string   `json:"recurrence_until"`
+		RecurrenceCount     *int32    `json:"recurrence_count"`
+	}
+
+	if err := json.Unmarshal(evt.EventData, &raw); err != nil {
+		return nil, err
+	}
+
+	appt := &pb.Appointment{
+		Id:          raw.ID,
+		UserId:      raw.UserID,
+		Title:       raw.Title,
+		Description: raw.Description,
+		StartTime:   timestamppb.New(raw.StartTime),
+		EndTime:     timestamppb.New(raw.EndTime),
+		Status:      statusToProto(domain.AppointmentStatus(raw.Status)),
+		CreatedAt:   timestamppb.New(raw.CreatedAt),
+		UpdatedAt:   timestamppb.New(raw.UpdatedAt),
+		Version:     raw.Version,
+	}
+
+	if raw.Location != nil {
+		appt.Location = *raw.Location
+	}
+
+	if raw.RecurrenceFrequency != nil {
+		appt.Recurrence = &pb.RecurrenceRule{
+			Frequency: frequencyToProto(domain.RecurrenceFrequency(*raw.RecurrenceFrequency)),
+		}
+		if raw.RecurrenceInterval != nil {
+			appt.Recurrence.Interval = *raw.RecurrenceInterval
+		}
+		if raw.RecurrenceUntil != nil {
+			if t, err := time.Parse(time.RFC3339, *raw.RecurrenceUntil); err == nil {
+				appt.Recurrence.Until = timestamppb.New(t)
+			}
+		}
+		if raw.RecurrenceCount != nil {
+			appt.Recurrence.Count = *raw.RecurrenceCount
+		}
+	}
+
+	return &pb.AppointmentEvent{
+		Type:        eventType,
+		Appointment: appt,
+	}, nil
 }
 
 // Helper functions for converting between domain and protobuf models

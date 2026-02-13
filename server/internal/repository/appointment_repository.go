@@ -342,3 +342,50 @@ func nullIfEmpty(v string) *string {
 	}
 	return &v
 }
+
+// EventRepository provides access to appointment event streams
+type EventRepository interface {
+	GetEventsSince(ctx context.Context, userID string, sinceID int64, limit int) ([]domain.AppointmentEvent, error)
+}
+
+type eventRepository struct {
+	pool *pgxpool.Pool
+}
+
+func NewEventRepository(pool *pgxpool.Pool) EventRepository {
+	return &eventRepository{pool: pool}
+}
+
+func (r *eventRepository) GetEventsSince(ctx context.Context, userID string, sinceID int64, limit int) ([]domain.AppointmentEvent, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+
+	const q = `
+		SELECT id, appointment_id, user_id, event_type, event_data, created_at
+		FROM appointment_events
+		WHERE user_id = $1 AND id > $2
+		ORDER BY id ASC
+		LIMIT $3
+	`
+
+	rows, err := r.pool.Query(ctx, q, userID, sinceID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	events := make([]domain.AppointmentEvent, 0)
+	for rows.Next() {
+		var evt domain.AppointmentEvent
+		if err := rows.Scan(&evt.ID, &evt.AppointmentID, &evt.UserID, &evt.EventType, &evt.EventData, &evt.CreatedAt); err != nil {
+			return nil, err
+		}
+		events = append(events, evt)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}

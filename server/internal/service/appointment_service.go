@@ -11,7 +11,8 @@ import (
 
 // AppointmentService handles business logic for appointments
 type AppointmentService struct {
-	repo repository.AppointmentRepository
+	repo      repository.AppointmentRepository
+	eventRepo repository.EventRepository
 }
 
 // NewAppointmentService creates a new appointment service
@@ -19,6 +20,22 @@ func NewAppointmentService(repo repository.AppointmentRepository) *AppointmentSe
 	return &AppointmentService{
 		repo: repo,
 	}
+}
+
+// SetEventRepository sets the event repository for streaming support
+func (s *AppointmentService) SetEventRepository(eventRepo repository.EventRepository) {
+	s.eventRepo = eventRepo
+}
+
+// GetEventsSince retrieves appointment events since a given event ID
+func (s *AppointmentService) GetEventsSince(ctx context.Context, userID string, sinceID int64, limit int) ([]domain.AppointmentEvent, error) {
+	if s.eventRepo == nil {
+		return nil, fmt.Errorf("event repository not configured")
+	}
+	if userID == "" {
+		return nil, fmt.Errorf("user_id is required")
+	}
+	return s.eventRepo.GetEventsSince(ctx, userID, sinceID, limit)
 }
 
 // CreateAppointment creates a new appointment with conflict checking
