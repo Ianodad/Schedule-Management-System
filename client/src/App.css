@@ -288,7 +288,8 @@
 }
 
 .modal-form input,
-.modal-form textarea {
+.modal-form textarea,
+.modal-form select {
   width: 100%;
   border-radius: 10px;
   border: 1px solid #2b4269;
@@ -319,6 +320,36 @@
 .details-content p {
   margin: 0.4rem 0;
   color: #d0def0;
+}
+
+.conflict-box {
+  background: rgba(127, 29, 29, 0.22);
+  border: 1px solid #ef4444;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.conflict-title {
+  margin: 0;
+  font-weight: 700;
+  color: #fecaca;
+}
+
+.conflict-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.conflict-item {
+  color: #fee2e2;
+}
+
+.conflict-item span {
+  display: block;
+  font-size: 0.85rem;
+  color: #fecaca;
 }
 
 @media (max-width: 1000px) {

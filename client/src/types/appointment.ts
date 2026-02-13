@@ -18,9 +18,9 @@ export type {
   CheckConflictsResponse,
   AppointmentEvent,
   EventType,
-} from '@/api/grpc/types'
+} from '../api/grpc/types'
 
-export { AppointmentStatus, RecurrenceFrequency, EventType } from '@/api/grpc/types'
+export { AppointmentStatus, RecurrenceFrequency, EventType } from '../api/grpc/types'
 
 // UI-specific types
 export interface AppointmentFormData {
