@@ -98,9 +98,6 @@ function App() {
     return map
   }, [sortedAppointments])
 
-  const selectedDayAppointments =
-    appointmentsByDay.get(toDayKey(selectedDate)) ?? []
-
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
   const todayEnd = new Date(todayStart)
   todayEnd.setDate(todayEnd.getDate() + 1)
@@ -134,6 +131,33 @@ function App() {
 
   const openCreateModal = () => {
     setCreateFormState(createInitialFormState(selectedDate))
+    setFormError(null)
+    setCreateConflictInfo(null)
+    setIsCreateModalOpen(true)
+  }
+
+  const formatDateInput = (value: Date) => {
+    const y = value.getFullYear()
+    const m = String(value.getMonth() + 1).padStart(2, '0')
+    const d = String(value.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+  }
+
+  const formatTimeInput = (value: Date) => {
+    const h = String(value.getHours()).padStart(2, '0')
+    const m = String(value.getMinutes()).padStart(2, '0')
+    return `${h}:${m}`
+  }
+
+  const openCreateModalForSlot = (start: Date, end: Date) => {
+    const initial = createInitialFormState(start)
+    setCreateFormState({
+      ...initial,
+      date: formatDateInput(start),
+      startTime: formatTimeInput(start),
+      endTime: formatTimeInput(end),
+    })
+    setSelectedDate(start)
     setFormError(null)
     setCreateConflictInfo(null)
     setIsCreateModalOpen(true)
@@ -302,10 +326,11 @@ function App() {
 
         <AgendaPanel
           selectedDate={selectedDate}
-          appointments={selectedDayAppointments}
+          appointments={sortedAppointments}
           loading={loading}
           error={error}
           onAdd={openCreateModal}
+          onSelectTimeSlot={openCreateModalForSlot}
           onSelectAppointment={setSelectedAppointment}
         />
       </main>

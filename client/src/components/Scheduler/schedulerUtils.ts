@@ -5,12 +5,19 @@ import type {
 import { RecurrenceFrequency } from '../../types/appointment'
 import type { AppointmentFormState } from './formTypes'
 
+function toLocalDateString(value: Date): string {
+  const year = value.getFullYear()
+  const month = String(value.getMonth() + 1).padStart(2, '0')
+  const day = String(value.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function toDate(value: string | Date): Date {
   return value instanceof Date ? value : new Date(value)
 }
 
 export function toDayKey(value: Date): string {
-  return value.toISOString().slice(0, 10)
+  return toLocalDateString(value)
 }
 
 export function formatMonthLabel(value: Date): string {
@@ -34,7 +41,7 @@ export function createInitialFormState(selectedDate: Date): AppointmentFormState
   return {
     title: '',
     description: '',
-    date: selectedDate.toISOString().slice(0, 10),
+    date: toLocalDateString(selectedDate),
     startTime: '09:00',
     endTime: '10:00',
     location: '',
@@ -73,7 +80,7 @@ export function createFormStateFromAppointment(
   return {
     title: appointment.title,
     description: appointment.description,
-    date: start.toISOString().slice(0, 10),
+    date: toLocalDateString(start),
     startTime: start.toTimeString().slice(0, 5),
     endTime: end.toTimeString().slice(0, 5),
     location: appointment.location ?? '',

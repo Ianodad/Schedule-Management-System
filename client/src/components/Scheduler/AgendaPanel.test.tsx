@@ -25,7 +25,7 @@ function buildAppointment(): Appointment {
 }
 
 describe('AgendaPanel', () => {
-  it('calls onSelectAppointment when an agenda item is clicked', async () => {
+  it('renders occupied slots as disabled cards', async () => {
     const appointment = buildAppointment()
     const onSelectAppointment = vi.fn()
 
@@ -36,13 +36,38 @@ describe('AgendaPanel', () => {
         loading={false}
         error={null}
         onAdd={vi.fn()}
+        onSelectTimeSlot={vi.fn()}
         onSelectAppointment={onSelectAppointment}
       />,
     )
 
-    await userEvent.click(screen.getByRole('button', { name: /daily standup/i }))
+    const occupiedSlotButton = screen.getByRole('button', { name: /daily standup/i })
+    expect(occupiedSlotButton).toBeDisabled()
+    await userEvent.click(occupiedSlotButton)
 
-    expect(onSelectAppointment).toHaveBeenCalledTimes(1)
-    expect(onSelectAppointment).toHaveBeenCalledWith(appointment)
+    expect(onSelectAppointment).not.toHaveBeenCalled()
+  })
+
+  it('calls onSelectTimeSlot when an available slot is clicked', async () => {
+    const onSelectTimeSlot = vi.fn()
+
+    render(
+      <AgendaPanel
+        selectedDate={new Date('2099-02-13T00:00:00Z')}
+        appointments={[]}
+        loading={false}
+        error={null}
+        onAdd={vi.fn()}
+        onSelectTimeSlot={onSelectTimeSlot}
+        onSelectAppointment={vi.fn()}
+      />,
+    )
+
+    const availableButtons = screen.getAllByRole('button', {
+      name: /available - click to add appointment/i,
+    })
+    await userEvent.click(availableButtons[0])
+
+    expect(onSelectTimeSlot).toHaveBeenCalledTimes(1)
   })
 })

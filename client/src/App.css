@@ -194,6 +194,31 @@
   max-height: 520px;
   overflow: auto;
   padding-right: 0.2rem;
+  scrollbar-width: thin;
+  scrollbar-color: #34588a #0f1b30;
+}
+
+.agenda-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.agenda-list::-webkit-scrollbar-track {
+  background: #0f1b30;
+  border-radius: 999px;
+}
+
+.agenda-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b6aa3, #2d4f7d);
+  border-radius: 999px;
+  border: 2px solid #0f1b30;
+}
+
+.agenda-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4d83c4, #34588a);
+}
+
+.agenda-timeline {
+  align-content: start;
 }
 
 .agenda-item {
@@ -202,6 +227,10 @@
   background: #0f1b30;
   border-radius: 12px;
   padding: 0.7rem;
+}
+
+.agenda-item:disabled {
+  cursor: not-allowed;
 }
 
 .agenda-item h3 {
@@ -214,6 +243,47 @@
   margin: 0.25rem 0 0;
   color: #9fb2cd;
   font-size: 0.88rem;
+}
+
+.slot-time {
+  margin: 0 0 0.3rem;
+  color: #9fb2cd;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.empty-slot {
+  border-style: dashed;
+}
+
+.open-slot {
+  background: #0f223e;
+  border-color: #34588a;
+}
+
+.open-slot:hover,
+.open-slot:focus-visible {
+  background: #173058;
+  border-color: #60a5fa;
+}
+
+.past-slot {
+  background: #0c1728;
+  border-color: #20314f;
+}
+
+.past-slot p {
+  color: #6f84a3;
+}
+
+.occupied-slot {
+  background: #132645;
+  border-color: #365f96;
+}
+
+.occupied-slot:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
 .status-text {
