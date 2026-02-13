@@ -6,7 +6,7 @@
  */
 
 import { AppointmentServiceClient } from '../../generated/appointment/v1/AppointmentServiceClientPb'
-import * as pb from '../../generated/appointment/v1/appointment_pb'
+import * as pb from '../../generated/appointment/v1/appointment_pb_esm'
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb'
 
 // Aliases for generated protobuf types

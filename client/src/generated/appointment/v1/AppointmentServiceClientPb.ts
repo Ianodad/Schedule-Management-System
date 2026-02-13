@@ -17,7 +17,7 @@
 
 import * as grpcWeb from 'grpc-web';
 
-import * as appointment_pb from './appointment_pb'; // proto import: "appointment.proto"
+import * as appointment_pb from './appointment_pb_esm'; // proto import: "appointment.proto"
 
 
 export class AppointmentServiceClient {
@@ -320,4 +320,3 @@ export class AppointmentServiceClient {
   }
 
 }
-

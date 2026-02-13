@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // StreamLoggingInterceptor logs gRPC stream RPCs
@@ -23,7 +25,11 @@ func StreamLoggingInterceptor() grpc.StreamServerInterceptor {
 
 		duration := time.Since(start)
 		if err != nil {
-			log.Printf("[gRPC-STREAM] %s - ERROR - %v (%s)", info.FullMethod, err, duration)
+			if status.Code(err) == codes.Canceled {
+				log.Printf("[gRPC-STREAM] %s - CANCELED (%s)", info.FullMethod, duration)
+			} else {
+				log.Printf("[gRPC-STREAM] %s - ERROR - %v (%s)", info.FullMethod, err, duration)
+			}
 		} else {
 			log.Printf("[gRPC-STREAM] %s - ENDED (%s)", info.FullMethod, duration)
 		}

@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "proto:generate": "grpc_tools_node_protoc --proto_path=../server/proto/appointment/v1 --js_out=import_style=commonjs,binary:./src/generated/appointment/v1 --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/generated/appointment/v1 --plugin=protoc-gen-grpc-web=$(which protoc-gen-grpc-web) appointment.proto"
+    "proto:generate": "grpc_tools_node_protoc --proto_path=../server/proto/appointment/v1 --js_out=import_style=commonjs,binary:./src/generated/appointment/v1 --grpc-web_out=import_style=typescript,mode=grpcwebtext:./src/generated/appointment/v1 --plugin=protoc-gen-grpc-web=$(which protoc-gen-grpc-web) appointment.proto && esbuild ./src/generated/appointment/v1/appointment_pb.js --bundle --format=esm --platform=browser --banner:js='var exports = {};' --outfile=./src/generated/appointment/v1/appointment_pb.esm.js && sed -i \"s|from './appointment_pb';|from './appointment_pb_esm';|\" ./src/generated/appointment/v1/AppointmentServiceClientPb.ts"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

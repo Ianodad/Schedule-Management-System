@@ -3,6 +3,7 @@ import { appointmentClient } from '../api/grpc/appointmentClient'
 import type { AppointmentEvent } from '../api/grpc/types'
 
 const RECONNECT_DELAY_MS = 3000
+const CANCELED_CODE = 1
 
 export function useRealtimeUpdates(
   userId: string,
@@ -16,9 +17,31 @@ export function useRealtimeUpdates(
 
     let cancelled = false
     let streamHandle: { cancel: () => void } | null = null
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+
+    function clearReconnectTimer() {
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer)
+        reconnectTimer = null
+      }
+    }
+
+    function scheduleReconnect() {
+      if (cancelled || reconnectTimer) return
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null
+        connect()
+      }, RECONNECT_DELAY_MS)
+    }
 
     function connect() {
       if (cancelled) return
+
+      // Ensure we never keep multiple active streams.
+      if (streamHandle) {
+        streamHandle.cancel()
+        streamHandle = null
+      }
 
       streamHandle = appointmentClient.streamAppointments(
         userId,
@@ -26,17 +49,16 @@ export function useRealtimeUpdates(
           onEventRef.current(event)
         },
         (err) => {
-          console.error('[realtime] stream error:', err.message)
-          // Reconnect after a delay unless intentionally cancelled
-          if (!cancelled) {
-            setTimeout(connect, RECONNECT_DELAY_MS)
+          if (cancelled) return
+
+          // Local client cancellation is expected during cleanup/reconnect.
+          if (err.code !== CANCELED_CODE) {
+            console.error('[realtime] stream error:', err.message)
           }
+          scheduleReconnect()
         },
         () => {
-          // Stream ended by server, reconnect
-          if (!cancelled) {
-            setTimeout(connect, RECONNECT_DELAY_MS)
-          }
+          if (!cancelled) scheduleReconnect()
         },
       )
     }
@@ -45,8 +67,10 @@ export function useRealtimeUpdates(
 
     return () => {
       cancelled = true
+      clearReconnectTimer()
       if (streamHandle) {
         streamHandle.cancel()
+        streamHandle = null
       }
     }
   }, [userId])
