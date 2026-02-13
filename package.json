@@ -1,0 +1,35 @@
+{
+  "name": "schedule-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade appointment scheduling system with concurrent access handling",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && go run cmd/server/main.go",
+    "dev:client": "cd client && npm run dev",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "cd server && go build -o bin/server cmd/server/main.go",
+    "build:client": "cd client && npm run build",
+    "test": "npm run test:server && npm run test:client",
+    "test:server": "cd server && go test ./...",
+    "test:client": "cd client && npm run test",
+    "proto:generate": "npm run proto:generate:server && npm run proto:generate:client",
+    "proto:generate:server": "cd server && buf generate",
+    "proto:generate:client": "cd server && buf generate --template buf.gen.web.yaml",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "db:migrate": "cd server && go run cmd/migrate/main.go"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

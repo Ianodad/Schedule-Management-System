@@ -1,0 +1,100 @@
+.day-view {
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.day-view-times {
+  width: 80px;
+  border-right: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.day-view-hour-label {
+  height: 60px;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.day-view-column {
+  flex: 1;
+  position: relative;
+  min-height: 1440px; /* 24 hours * 60px */
+}
+
+.day-view-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.day-view-hour-slot {
+  height: 60px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.day-view-hour-slot:nth-child(odd) {
+  background: #fafafa;
+}
+
+.day-view-appointments {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 0.5rem;
+}
+
+.day-view-appointment {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  border-left: 3px solid #3b82f6;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.2s;
+}
+
+.day-view-appointment:hover {
+  background: #bfdbfe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.day-view-appointment-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e40af;
+  margin-bottom: 0.25rem;
+}
+
+.day-view-appointment-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1e3a8a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-view-appointment-location {
+  font-size: 0.75rem;
+  color: #1e40af;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

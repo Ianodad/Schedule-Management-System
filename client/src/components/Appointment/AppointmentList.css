@@ -1,0 +1,19 @@
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.appointment-list-empty {
+  padding: 3rem;
+  text-align: center;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 2px dashed #d1d5db;
+}
+
+.appointment-list-empty p {
+  margin: 0;
+  font-size: 0.9375rem;
+}

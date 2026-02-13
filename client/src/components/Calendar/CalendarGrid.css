@@ -1,0 +1,121 @@
+.calendar-grid {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.calendar-grid-weekday {
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  border-right: 1px solid #e5e7eb;
+}
+
+.calendar-grid-weekday:last-child {
+  border-right: none;
+}
+
+.calendar-grid-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+}
+
+.calendar-grid-day {
+  padding: 0.5rem;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 120px;
+  background: white;
+  transition: background-color 0.2s;
+}
+
+.calendar-grid-day:hover {
+  background: #f9fafb;
+}
+
+.calendar-grid-day:nth-child(7n) {
+  border-right: none;
+}
+
+.calendar-grid-day.other-month {
+  background: #fafafa;
+  color: #9ca3af;
+}
+
+.calendar-grid-day.today {
+  background: #eff6ff;
+}
+
+.calendar-grid-day-number {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-grid-day.today .calendar-grid-day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+}
+
+.calendar-grid-day.other-month .calendar-grid-day-number {
+  color: #9ca3af;
+}
+
+.calendar-grid-appointments {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-grid-appointment {
+  padding: 2px 6px;
+  background: #dbeafe;
+  border-left: 3px solid #3b82f6;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: background-color 0.2s;
+}
+
+.calendar-grid-appointment:hover {
+  background: #bfdbfe;
+}
+
+.calendar-grid-appointment-time {
+  font-weight: 600;
+  color: #1e40af;
+  margin-right: 0.25rem;
+}
+
+.calendar-grid-appointment-title {
+  color: #1e3a8a;
+}
+
+.calendar-grid-more {
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}

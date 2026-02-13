@@ -1,0 +1,142 @@
+.week-view {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+
+.week-view-header {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.week-view-corner {
+  width: 80px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.week-view-day-header {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  border-right: 1px solid #e5e7eb;
+}
+
+.week-view-day-header:last-child {
+  border-right: none;
+}
+
+.week-view-day-header.today {
+  background: #eff6ff;
+}
+
+.week-view-day-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.week-view-day-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 0.25rem;
+}
+
+.week-view-day-header.today .week-view-day-number {
+  color: #3b82f6;
+}
+
+.week-view-body {
+  display: flex;
+}
+
+.week-view-times {
+  width: 80px;
+  border-right: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.week-view-hour-label {
+  height: 60px;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.week-view-day-column {
+  flex: 1;
+  position: relative;
+  min-height: 1440px;
+  border-right: 1px solid #e5e7eb;
+}
+
+.week-view-day-column:last-child {
+  border-right: none;
+}
+
+.week-view-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.week-view-hour-slot {
+  height: 60px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.week-view-hour-slot:nth-child(odd) {
+  background: #fafafa;
+}
+
+.week-view-appointments {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 2px;
+}
+
+.week-view-appointment {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  border-left: 2px solid #3b82f6;
+  border-radius: 3px;
+  padding: 2px 4px;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.week-view-appointment:hover {
+  background: #bfdbfe;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.week-view-appointment-time {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.week-view-appointment-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e3a8a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
