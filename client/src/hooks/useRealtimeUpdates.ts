@@ -53,7 +53,11 @@ export function useRealtimeUpdates(
 
           // Local client cancellation is expected during cleanup/reconnect.
           if (err.code !== CANCELED_CODE) {
-            console.error('[realtime] stream error:', err.message)
+            console.error('[realtime] stream error:', {
+              code: err.code,
+              message: err.message,
+              metadata: err.metadata,
+            })
           }
           scheduleReconnect()
         },

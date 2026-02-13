@@ -199,12 +199,20 @@ func (h *AppointmentHandler) StreamAppointments(req *pb.StreamAppointmentsReques
 		return status.Error(codes.InvalidArgument, "user_id is required")
 	}
 
+	log.Printf("[STREAM] client connected: user_id=%s", req.UserId)
+
+	// Get initial lastEventID from most recent event
 	var lastEventID int64
+	initialEvents, err := h.service.GetEventsSince(stream.Context(), req.UserId, 0, 1)
+	if err == nil && len(initialEvents) > 0 {
+		lastEventID = initialEvents[0].ID
+		log.Printf("[STREAM] starting from event ID: %d", lastEventID)
+	}
+
 	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 
-	log.Printf("[STREAM] client connected: user_id=%s", req.UserId)
-
+	// Poll for new events
 	for {
 		select {
 		case <-stream.Context().Done():
@@ -230,6 +238,7 @@ func (h *AppointmentHandler) StreamAppointments(req *pb.StreamAppointmentsReques
 				}
 
 				lastEventID = evt.ID
+				log.Printf("[STREAM] sent event ID %d to user %s", evt.ID, req.UserId)
 			}
 		}
 	}
@@ -258,6 +267,7 @@ func eventToProto(evt domain.AppointmentEvent) (*pb.AppointmentEvent, error) {
 		StartTime           time.Time `json:"start_time"`
 		EndTime             time.Time `json:"end_time"`
 		Location            *string   `json:"location"`
+		Attendees           []string  `json:"attendees"`
 		Status              string    `json:"status"`
 		CreatedAt           time.Time `json:"created_at"`
 		UpdatedAt           time.Time `json:"updated_at"`
@@ -279,6 +289,7 @@ func eventToProto(evt domain.AppointmentEvent) (*pb.AppointmentEvent, error) {
 		Description: raw.Description,
 		StartTime:   timestamppb.New(raw.StartTime),
 		EndTime:     timestamppb.New(raw.EndTime),
+		Attendees:   raw.Attendees,
 		Status:      statusToProto(domain.AppointmentStatus(raw.Status)),
 		CreatedAt:   timestamppb.New(raw.CreatedAt),
 		UpdatedAt:   timestamppb.New(raw.UpdatedAt),
@@ -287,6 +298,11 @@ func eventToProto(evt domain.AppointmentEvent) (*pb.AppointmentEvent, error) {
 
 	if raw.Location != nil {
 		appt.Location = *raw.Location
+	}
+
+	// Ensure attendees is never nil (protobuf expects empty array, not nil)
+	if appt.Attendees == nil {
+		appt.Attendees = []string{}
 	}
 
 	if raw.RecurrenceFrequency != nil {
