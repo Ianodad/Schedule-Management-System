@@ -53,6 +53,36 @@ function createInitialFormState(selectedDate: Date): AppointmentFormState {
   }
 }
 
+function createFormStateFromAppointment(appointment: Appointment): AppointmentFormState {
+  const start = toDate(appointment.startTime)
+  const end = toDate(appointment.endTime)
+
+  return {
+    title: appointment.title,
+    description: appointment.description,
+    date: start.toISOString().slice(0, 10),
+    startTime: start.toTimeString().slice(0, 5),
+    endTime: end.toTimeString().slice(0, 5),
+    location: appointment.location ?? '',
+    attendees: (appointment.attendees ?? []).join(', '),
+  }
+}
+
+function getFormDateRange(formState: AppointmentFormState): { startDate: Date; endDate: Date } {
+  const startDate = new Date(`${formState.date}T${formState.startTime}`)
+  const endDate = new Date(`${formState.date}T${formState.endTime}`)
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    throw new Error('Please provide valid start and end times.')
+  }
+
+  if (endDate <= startDate) {
+    throw new Error('End time must be after start time.')
+  }
+
+  return { startDate, endDate }
+}
+
 function getMonthDays(monthDate: Date): Date[] {
   const firstOfMonth = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1)
   const lastOfMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0)
@@ -79,6 +109,7 @@ function App() {
     loading,
     error,
     createAppointment,
+    updateAppointment,
     deleteAppointment,
     checkConflicts,
   } = useAppointments()
@@ -89,13 +120,22 @@ function App() {
   )
   const [selectedDate, setSelectedDate] = useState(today)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null)
+  const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(
+    null,
+  )
   const [formState, setFormState] = useState<AppointmentFormState>(() =>
     createInitialFormState(today),
   )
+  const [editFormState, setEditFormState] = useState<AppointmentFormState>(() =>
+    createInitialFormState(today),
+  )
   const [submitting, setSubmitting] = useState(false)
+  const [editSubmitting, setEditSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [editFormError, setEditFormError] = useState<string | null>(null)
 
   const monthDays = useMemo(() => getMonthDays(currentMonth), [currentMonth])
 
@@ -166,22 +206,27 @@ function App() {
     setFormError(null)
   }
 
+  const openEditModal = (appointment: Appointment) => {
+    setEditingAppointment(appointment)
+    setEditFormState(createFormStateFromAppointment(appointment))
+    setEditFormError(null)
+    setSelectedAppointment(null)
+    setIsEditModalOpen(true)
+  }
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingAppointment(null)
+    setEditFormError(null)
+  }
+
   const handleCreateAppointment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitting(true)
     setFormError(null)
 
     try {
-      const startDate = new Date(`${formState.date}T${formState.startTime}`)
-      const endDate = new Date(`${formState.date}T${formState.endTime}`)
-
-      if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-        throw new Error('Please provide valid start and end times.')
-      }
-
-      if (endDate <= startDate) {
-        throw new Error('End time must be after start time.')
-      }
+      const { startDate, endDate } = getFormDateRange(formState)
 
       const conflicts = await checkConflicts(startDate, endDate)
       if (conflicts?.message) {
@@ -208,6 +253,48 @@ function App() {
       setFormError(message)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleUpdateAppointment = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!editingAppointment) {
+      return
+    }
+
+    setEditSubmitting(true)
+    setEditFormError(null)
+
+    try {
+      const { startDate, endDate } = getFormDateRange(editFormState)
+
+      const conflicts = await checkConflicts(startDate, endDate, editingAppointment.id)
+      if (conflicts?.message) {
+        throw new Error(conflicts.message)
+      }
+
+      await updateAppointment({
+        ...editingAppointment,
+        title: editFormState.title.trim(),
+        description: editFormState.description.trim(),
+        startTime: startDate,
+        endTime: endDate,
+        location: editFormState.location.trim(),
+        attendees: editFormState.attendees
+          .split(',')
+          .map(item => item.trim())
+          .filter(Boolean),
+      })
+
+      setSelectedDate(startDate)
+      setCurrentMonth(new Date(startDate.getFullYear(), startDate.getMonth(), 1))
+      closeEditModal()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update appointment'
+      setEditFormError(message)
+    } finally {
+      setEditSubmitting(false)
     }
   }
 
@@ -498,6 +585,13 @@ function App() {
 
             <div className="modal-actions">
               <button
+                className="ghost-btn"
+                onClick={() => openEditModal(selectedAppointment)}
+                disabled={loading}
+              >
+                Edit Appointment
+              </button>
+              <button
                 className="danger-btn"
                 onClick={handleDeleteSelected}
                 disabled={loading}
@@ -507,6 +601,102 @@ function App() {
             </div>
           </div>
         ) : null}
+      </Modal>
+
+      <Modal isOpen={isEditModalOpen} onClose={closeEditModal} title="Edit Appointment">
+        <form className="modal-form" onSubmit={handleUpdateAppointment}>
+          <label>
+            Title
+            <input
+              required
+              value={editFormState.title}
+              onChange={event =>
+                setEditFormState(prev => ({ ...prev, title: event.target.value }))
+              }
+              placeholder="Client check-in"
+            />
+          </label>
+
+          <label>
+            Description
+            <textarea
+              value={editFormState.description}
+              onChange={event =>
+                setEditFormState(prev => ({ ...prev, description: event.target.value }))
+              }
+              placeholder="Agenda, notes, expectations"
+            />
+          </label>
+
+          <div className="form-row">
+            <label>
+              Date
+              <input
+                required
+                type="date"
+                value={editFormState.date}
+                onChange={event =>
+                  setEditFormState(prev => ({ ...prev, date: event.target.value }))
+                }
+              />
+            </label>
+            <label>
+              Start
+              <input
+                required
+                type="time"
+                value={editFormState.startTime}
+                onChange={event =>
+                  setEditFormState(prev => ({ ...prev, startTime: event.target.value }))
+                }
+              />
+            </label>
+            <label>
+              End
+              <input
+                required
+                type="time"
+                value={editFormState.endTime}
+                onChange={event =>
+                  setEditFormState(prev => ({ ...prev, endTime: event.target.value }))
+                }
+              />
+            </label>
+          </div>
+
+          <label>
+            Location
+            <input
+              value={editFormState.location}
+              onChange={event =>
+                setEditFormState(prev => ({ ...prev, location: event.target.value }))
+              }
+              placeholder="Board room A / Zoom"
+            />
+          </label>
+
+          <label>
+            Attendees (comma separated)
+            <input
+              value={editFormState.attendees}
+              onChange={event =>
+                setEditFormState(prev => ({ ...prev, attendees: event.target.value }))
+              }
+              placeholder="alice@company.com, bob@company.com"
+            />
+          </label>
+
+          {editFormError ? <p className="error-text">{editFormError}</p> : null}
+
+          <div className="modal-actions">
+            <button type="button" className="ghost-btn" onClick={closeEditModal}>
+              Cancel
+            </button>
+            <button type="submit" className="primary-btn" disabled={editSubmitting}>
+              {editSubmitting ? 'Saving...' : 'Update Appointment'}
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   )
