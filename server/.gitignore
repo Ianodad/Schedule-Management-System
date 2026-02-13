@@ -1,24 +1,20 @@
-CLAUDE.md
 
+bin/
 # Binaries for programs and plugins
+CLAUDE.md
+# Dependency directories (remove the comment below to include it)
+*.dll
+*.dylib
 *.exe
 *.exe~
-*.dll
-*.so
-*.dylib
-bin/
-
-# Test binary, built with `go test -c`
-*.test
-
-# Project-local cross-compilation toolchain
-.gox_output/
-
-# Go workspace file
 go.work
-
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Go workspace file
+.gox_output/
 *.out
-
-# Dependency directories (remove the comment below to include it)
+# Output of the go coverage tool, specifically when used with LiteIDE
+# Project-local cross-compilation toolchain
+*.so
+*.test
+# Test binary, built with `go test -c`
+tmp/
 # vendor/

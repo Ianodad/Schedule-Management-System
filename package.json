@@ -7,6 +7,18 @@
     "client"
   ],
   "scripts": {
+    "dev": "docker compose up --build",
+    "dev:detached": "docker compose up -d --build",
+    "dev:postgres": "docker compose up postgres -d",
+    "dev:backend": "docker compose up postgres server envoy -d",
+    "dev:frontend": "npm run client",
+    "start": "npm run dev",
+    "stop": "docker compose down",
+    "restart": "npm run stop && npm run dev",
+    "logs": "docker compose logs -f",
+    "logs:server": "docker compose logs -f server",
+    "logs:client": "docker compose logs -f client",
+    "logs:postgres": "docker compose logs -f postgres",
     "client": "npm run dev --workspace=client",
     "client:build": "npm run build --workspace=client",
     "client:install": "npm install --workspace=client",
@@ -16,11 +28,14 @@
     "proto:server": "cd server && make proto",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:build": "docker compose build",
-    "docker:logs": "docker compose logs -f",
-    "dev": "docker compose up",
+    "docker:build": "docker compose build --no-cache",
+    "docker:rebuild": "docker compose down && docker compose build --no-cache && docker compose up -d",
+    "docker:clean": "docker compose down -v && docker system prune -f",
     "build": "npm run client:build && npm run server:build",
-    "test": "npm run server:test"
+    "test": "npm run server:test",
+    "test:all": "npm run test && npm run client:test",
+    "db:shell": "docker exec -it schedule-postgres psql -U schedule_user -d schedule_db",
+    "db:logs": "docker compose logs -f postgres"
   },
   "repository": {
     "type": "git",

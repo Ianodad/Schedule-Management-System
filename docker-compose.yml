@@ -9,32 +9,43 @@ services:
       POSTGRES_USER: schedule_user
       POSTGRES_PASSWORD: schedule_password
     ports:
-      - "5432:5432"
+      - "5433:5432"  # Using 5433 to avoid conflicts with local PostgreSQL
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./server/internal/db/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U schedule_user -d schedule_db"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - schedule-network
 
   server:
     build:
       context: ./server
       dockerfile: Dockerfile
+      target: development  # Use development stage for hot reload
     container_name: schedule-server
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       DB_HOST: postgres
-      DB_PORT: "5432"
+      DB_PORT: "5432"  # Internal port within Docker network
       DB_NAME: schedule_db
       DB_USER: schedule_user
       DB_PASSWORD: schedule_password
+      DB_SSLMODE: disable
       GRPC_PORT: "50051"
     ports:
       - "50051:50051"
+    volumes:
+      - ./server:/app  # Mount source for hot reload
+      - /app/bin       # Exclude bin directory
+    networks:
+      - schedule-network
+    restart: unless-stopped
 
   envoy:
     build:
@@ -44,8 +55,11 @@ services:
     depends_on:
       - server
     ports:
-      - "8080:8080"
-      - "9901:9901"
+      - "8080:8080"   # gRPC-Web proxy
+      - "9901:9901"   # Envoy admin interface
+    networks:
+      - schedule-network
+    restart: unless-stopped
 
   client:
     build:
@@ -53,11 +67,23 @@ services:
       dockerfile: Dockerfile
     container_name: schedule-client
     environment:
-      VITE_GRPC_BASE_URL: http://localhost:8080
+      VITE_GRPC_WEB_URL: http://localhost:8080
+      VITE_USER_ID: demo-user
     depends_on:
       - envoy
     ports:
       - "5173:5173"
+    volumes:
+      - ./client:/app              # Mount source for hot reload
+      - /app/node_modules          # Exclude node_modules
+      - /app/dist                  # Exclude dist
+    networks:
+      - schedule-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+
+networks:
+  schedule-network:
+    driver: bridge
