@@ -5,6 +5,11 @@ Project layout uses:
 - `client/` for the frontend app
 - `envoy/` for gRPC-Web proxy configuration
 
+## Prerequisites
+
+- Docker + Docker Compose
+- Node.js 20+ and npm
+
 ## Structure
 
 - `server/`: Go service, domain logic, repository layer, and proto files.
@@ -24,3 +29,26 @@ Expected endpoints:
 - Envoy gRPC-Web: `http://localhost:8080`
 - Envoy admin: `http://localhost:9901`
 - Server gRPC: `localhost:50051`
+
+## Clean Bootstrap Verification
+
+From a fresh clone, use:
+
+```bash
+npm install
+docker compose up --build -d
+npm run verify:e2e
+```
+
+The `verify:e2e` command runs `scripts/verify_envoy_connectivity.sh` and validates:
+- Create appointment (via Envoy)
+- List appointments (via Envoy)
+- Delete appointment (via Envoy)
+
+For a full clean reset before retesting:
+
+```bash
+docker compose down -v
+docker compose up --build -d
+npm run verify:e2e
+```
