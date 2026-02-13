@@ -1,5 +1,5 @@
 # Development stage - with hot reload support
-FROM golang:1.24-alpine AS development
+FROM golang:alpine AS development
 WORKDIR /app
 
 # Install air for hot reload in development
@@ -18,7 +18,7 @@ EXPOSE 50051
 CMD ["air", "-c", ".air.toml"]
 
 # Production builder stage
-FROM golang:1.24-alpine AS builder
+FROM golang:alpine AS builder
 WORKDIR /app
 
 COPY go.mod go.sum ./
