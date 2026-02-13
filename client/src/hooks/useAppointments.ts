@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { appointmentClient } from '@/api/grpc/appointmentClient'
+import { appointmentClient } from '../api/grpc/appointmentClient'
 import type {
   Appointment,
   CreateAppointmentRequest,
   AppointmentStatus,
-} from '@/types/appointment'
+} from '../types/appointment'
 import toast from 'react-hot-toast'
 
 // Get user ID from environment or use default for demo
