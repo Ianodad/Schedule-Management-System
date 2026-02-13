@@ -48,7 +48,7 @@ func (r *appointmentRepository) Create(ctx context.Context, appt domain.Appointm
 			$1, $2, $3, $4, $5, $6, $7, $8,
 			$9, $10, $11, $12, $13
 		)
-		RETURNING id, user_id, title, description, start_time, end_time, location, attendees, status,
+		RETURNING id, user_id, title, description, start_time, end_time, COALESCE(location, ''), attendees, status,
 			recurrence_frequency, recurrence_interval, recurrence_until, recurrence_count,
 			parent_appointment_id, created_at, updated_at, version
 	`
@@ -178,7 +178,7 @@ func (r *appointmentRepository) Update(ctx context.Context, appt domain.Appointm
 			recurrence_count = $12,
 			version = version + 1
 		WHERE id = $1 AND version = $13
-		RETURNING id, user_id, title, description, start_time, end_time, location, attendees, status,
+		RETURNING id, user_id, title, description, start_time, end_time, COALESCE(location, ''), attendees, status,
 			recurrence_frequency, recurrence_interval, recurrence_until, recurrence_count,
 			parent_appointment_id, created_at, updated_at, version
 	`

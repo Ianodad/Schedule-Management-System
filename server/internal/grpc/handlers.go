@@ -60,6 +60,7 @@ func (h *AppointmentHandler) CreateAppointment(ctx context.Context, req *pb.Crea
 		if errors.Is(err, domain.ErrInvalidTimeRange) {
 			return nil, status.Error(codes.InvalidArgument, "end_time must be after start_time")
 		}
+		log.Printf("[ERROR] CreateAppointment failed - error=%v", err)
 		return nil, status.Error(codes.Internal, "failed to create appointment")
 	}
 
