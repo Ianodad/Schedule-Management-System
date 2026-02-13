@@ -78,7 +78,7 @@ func (r *appointmentRepository) Create(ctx context.Context, appt domain.Appointm
 
 func (r *appointmentRepository) GetByID(ctx context.Context, id string) (domain.Appointment, error) {
 	const q = `
-		SELECT id, user_id, title, description, start_time, end_time, location, attendees, status,
+		SELECT id, user_id, title, description, start_time, end_time, COALESCE(location, ''), attendees, status,
 			recurrence_frequency, recurrence_interval, recurrence_until, recurrence_count,
 			parent_appointment_id, created_at, updated_at, version
 		FROM appointments
@@ -125,7 +125,7 @@ func (r *appointmentRepository) ListByUser(ctx context.Context, userID string, f
 	}
 
 	q := fmt.Sprintf(`
-		SELECT id, user_id, title, description, start_time, end_time, location, attendees, status,
+		SELECT id, user_id, title, description, start_time, end_time, COALESCE(location, ''), attendees, status,
 			recurrence_frequency, recurrence_interval, recurrence_until, recurrence_count,
 			parent_appointment_id, created_at, updated_at, version
 		FROM appointments
