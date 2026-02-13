@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package appointment.v1;
 
+option go_package = "schedule-management-system/server/proto/appointment/v1;appointmentv1";
+
 import "google/protobuf/timestamp.proto";
 
 message Appointment {

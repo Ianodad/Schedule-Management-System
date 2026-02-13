@@ -2,12 +2,16 @@ package db
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"schedule-management-system/server/internal/config"
 )
+
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
 
 func NewPool(ctx context.Context, cfg config.DBConfig) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf(
@@ -41,4 +45,21 @@ func NewPool(ctx context.Context, cfg config.DBConfig) (*pgxpool.Pool, error) {
 	}
 
 	return pool, nil
+}
+
+// RunMigrations applies database migrations
+func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
+	// Read migration file
+	migrationSQL, err := migrationsFS.ReadFile("migrations/001_initial_schema.sql")
+	if err != nil {
+		return fmt.Errorf("read migration file: %w", err)
+	}
+
+	// Execute migration
+	_, err = pool.Exec(ctx, string(migrationSQL))
+	if err != nil {
+		return fmt.Errorf("execute migration: %w", err)
+	}
+
+	return nil
 }
