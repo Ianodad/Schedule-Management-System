@@ -1,0 +1,40 @@
+{
+  "name": "schedule-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Schedule Management System - Full-stack appointment scheduling with gRPC",
+  "workspaces": [
+    "client"
+  ],
+  "scripts": {
+    "client": "npm run dev --workspace=client",
+    "client:build": "npm run build --workspace=client",
+    "client:install": "npm install --workspace=client",
+    "server": "cd server && go run ./cmd/server",
+    "server:build": "cd server && go build -o bin/server ./cmd/server",
+    "server:test": "cd server && go test ./...",
+    "proto:server": "cd server && make proto",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose build",
+    "docker:logs": "docker compose logs -f",
+    "dev": "docker compose up",
+    "build": "npm run client:build && npm run server:build",
+    "test": "npm run server:test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/schedule-management-system"
+  },
+  "keywords": [
+    "scheduling",
+    "appointments",
+    "grpc",
+    "react",
+    "golang",
+    "postgresql",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT"
+}
