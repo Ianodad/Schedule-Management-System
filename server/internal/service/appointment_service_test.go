@@ -117,6 +117,17 @@ func TestAppointmentService_CreateAppointment(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "start time in the past",
+			appointment: domain.Appointment{
+				UserID:    "user-1",
+				Title:     "Meeting",
+				StartTime: time.Now().Add(-1 * time.Hour),
+				EndTime:   time.Now().Add(1 * time.Hour),
+			},
+			wantErr:     true,
+			errContains: "start_time must be in the future",
+		},
+		{
 			name: "conflict error",
 			appointment: domain.Appointment{
 				UserID:    "user-1",
@@ -213,10 +224,11 @@ func TestAppointmentService_GetAppointment(t *testing.T) {
 
 func TestAppointmentService_UpdateAppointment(t *testing.T) {
 	tests := []struct {
-		name        string
-		appointment domain.Appointment
-		mockUpdate  func(context.Context, domain.Appointment) (domain.Appointment, error)
-		wantErr     bool
+		name         string
+		appointment  domain.Appointment
+		mockUpdate   func(context.Context, domain.Appointment) (domain.Appointment, error)
+		wantErr      bool
+		errContains  string
 		checkVersion bool
 	}{
 		{
@@ -247,6 +259,19 @@ func TestAppointmentService_UpdateAppointment(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "rejects past start time",
+			appointment: domain.Appointment{
+				ID:        "test-id",
+				UserID:    "user-1",
+				Title:     "Updated",
+				StartTime: time.Now().Add(-1 * time.Hour),
+				EndTime:   time.Now().Add(1 * time.Hour),
+				Version:   1,
+			},
+			wantErr:     true,
+			errContains: "start_time must be in the future",
+		},
 	}
 
 	for _, tt := range tests {
@@ -261,6 +286,9 @@ func TestAppointmentService_UpdateAppointment(t *testing.T) {
 			}
 			if !tt.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
+			}
+			if tt.errContains != "" && err != nil && !contains(err.Error(), tt.errContains) {
+				t.Errorf("expected error to contain %q, got %q", tt.errContains, err.Error())
 			}
 			if tt.checkVersion && updated.Version != tt.appointment.Version+1 {
 				t.Errorf("expected version %d, got %d", tt.appointment.Version+1, updated.Version)

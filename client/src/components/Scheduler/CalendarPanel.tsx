@@ -27,6 +27,7 @@ function CalendarPanel({
   onNextMonth,
 }: CalendarPanelProps) {
   const selectedDayKey = toDayKey(selectedDate)
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
   const monthDays: Date[] = []
   const firstOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
@@ -71,6 +72,7 @@ function CalendarPanel({
           const isOutsideMonth = day.getMonth() !== currentMonth.getMonth()
           const isSelected = dayKey === selectedDayKey
           const isToday = dayKey === toDayKey(today)
+          const isPastDay = day < todayStart
 
           return (
             <button
@@ -80,10 +82,13 @@ function CalendarPanel({
                 isOutsideMonth ? 'outside-month' : '',
                 isSelected ? 'selected-day' : '',
                 isToday ? 'today' : '',
+                isPastDay ? 'past-day' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => onSelectDate(day)}
+              disabled={isPastDay}
+              aria-disabled={isPastDay}
             >
               <div className="day-number">{day.getDate()}</div>
               {dayAppointments.slice(0, 2).map((appointment) => (

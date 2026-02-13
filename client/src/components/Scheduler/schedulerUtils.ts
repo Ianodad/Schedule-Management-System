@@ -109,6 +109,7 @@ export function getFormDateRange(formState: AppointmentFormState): {
 } {
   const startDate = new Date(`${formState.date}T${formState.startTime}`)
   const endDate = new Date(`${formState.date}T${formState.endTime}`)
+  const now = new Date()
 
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
     throw new Error('Please provide valid start and end times.')
@@ -116,6 +117,10 @@ export function getFormDateRange(formState: AppointmentFormState): {
 
   if (endDate <= startDate) {
     throw new Error('End time must be after start time.')
+  }
+
+  if (startDate <= now) {
+    throw new Error('Start time must be in the future.')
   }
 
   return { startDate, endDate }

@@ -13,12 +13,14 @@ import (
 type AppointmentService struct {
 	repo      repository.AppointmentRepository
 	eventRepo repository.EventRepository
+	now       func() time.Time
 }
 
 // NewAppointmentService creates a new appointment service
 func NewAppointmentService(repo repository.AppointmentRepository) *AppointmentService {
 	return &AppointmentService{
 		repo: repo,
+		now:  time.Now,
 	}
 }
 
@@ -43,6 +45,9 @@ func (s *AppointmentService) CreateAppointment(ctx context.Context, appt domain.
 	// Validate time range
 	if !appt.EndTime.After(appt.StartTime) {
 		return domain.Appointment{}, nil, domain.ErrInvalidTimeRange
+	}
+	if err := s.validateStartTime(appt.StartTime); err != nil {
+		return domain.Appointment{}, nil, err
 	}
 
 	// Validate title
@@ -115,6 +120,9 @@ func (s *AppointmentService) UpdateAppointment(ctx context.Context, appt domain.
 	if !appt.EndTime.After(appt.StartTime) {
 		return domain.Appointment{}, nil, domain.ErrInvalidTimeRange
 	}
+	if err := s.validateStartTime(appt.StartTime); err != nil {
+		return domain.Appointment{}, nil, err
+	}
 
 	// Validate required fields
 	if appt.ID == "" {
@@ -174,4 +182,11 @@ func (s *AppointmentService) CheckConflicts(ctx context.Context, userID string, 
 	}
 
 	return conflicts, nil
+}
+
+func (s *AppointmentService) validateStartTime(startTime time.Time) error {
+	if !startTime.After(s.now()) {
+		return domain.ErrStartTimeInPast
+	}
+	return nil
 }

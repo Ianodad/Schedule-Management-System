@@ -9,6 +9,18 @@ function AppointmentFormFields({
   formState,
   onChange,
 }: AppointmentFormFieldsProps) {
+  const now = new Date()
+  const todayDate = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-')
+  const currentTime = [
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+  ].join(':')
+  const minStartTime = formState.date === todayDate ? currentTime : undefined
+
   return (
     <>
       <label>
@@ -44,6 +56,8 @@ function AppointmentFormFields({
             onChange={(event) =>
               onChange({ ...formState, date: event.target.value })
             }
+            min={todayDate}
+            max="2099-12-31"
           />
         </label>
         <label>
@@ -55,6 +69,7 @@ function AppointmentFormFields({
             onChange={(event) =>
               onChange({ ...formState, startTime: event.target.value })
             }
+            min={minStartTime}
           />
         </label>
         <label>

@@ -114,20 +114,53 @@
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease, transform 120ms ease;
 }
 
-.day-cell:hover {
+.day-cell:not(.past-day):hover,
+.day-cell:not(.past-day):focus-visible {
   border-color: #4f83d1;
+  background: #152845;
+  transform: translateY(-1px);
 }
 
 .day-number {
   font-size: 0.82rem;
   color: #cbd5e1;
   font-weight: 600;
+  transition: color 120ms ease;
+}
+
+.day-cell:not(.past-day):hover .day-number,
+.day-cell:not(.past-day):focus-visible .day-number {
+  color: #bfdbfe;
 }
 
 .outside-month {
   opacity: 0.45;
+}
+
+.past-day {
+  background: #0d1524;
+  border-color: #1a2a45;
+}
+
+.past-day .day-number {
+  color: #6b7f9d;
+}
+
+.past-day .day-pill {
+  background: #14233a;
+  color: #8fa5c1;
+}
+
+.past-day:hover {
+  border-color: #1a2a45;
+}
+
+.past-day:disabled {
+  cursor: not-allowed;
 }
 
 .selected-day {

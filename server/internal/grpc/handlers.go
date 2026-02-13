@@ -60,6 +60,9 @@ func (h *AppointmentHandler) CreateAppointment(ctx context.Context, req *pb.Crea
 		if errors.Is(err, domain.ErrInvalidTimeRange) {
 			return nil, status.Error(codes.InvalidArgument, "end_time must be after start_time")
 		}
+		if errors.Is(err, domain.ErrStartTimeInPast) {
+			return nil, status.Error(codes.InvalidArgument, "start_time must be in the future")
+		}
 		log.Printf("[ERROR] CreateAppointment failed - error=%v", err)
 		return nil, status.Error(codes.Internal, "failed to create appointment")
 	}
@@ -145,6 +148,9 @@ func (h *AppointmentHandler) UpdateAppointment(ctx context.Context, req *pb.Upda
 		}
 		if errors.Is(err, domain.ErrInvalidTimeRange) {
 			return nil, status.Error(codes.InvalidArgument, "end_time must be after start_time")
+		}
+		if errors.Is(err, domain.ErrStartTimeInPast) {
+			return nil, status.Error(codes.InvalidArgument, "start_time must be in the future")
 		}
 		return nil, status.Error(codes.Internal, "failed to update appointment")
 	}
