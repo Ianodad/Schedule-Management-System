@@ -34,6 +34,7 @@
     "build": "npm run client:build && npm run server:build",
     "test": "npm run server:test",
     "test:all": "npm run test && npm run client:test",
+    "verify:e2e": "bash scripts/verify_envoy_connectivity.sh",
     "db:shell": "docker exec -it schedule-postgres psql -U schedule_user -d schedule_db",
     "db:logs": "docker compose logs -f postgres"
   },
