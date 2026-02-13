@@ -1,16 +1,43 @@
-# React + Vite
+# Client (React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend for the Schedule Management System.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Month calendar view with day-level agenda panel
+- Create, edit, and delete appointment flows
+- Conflict feedback in create/edit forms
+- Recurrence controls (None / Daily / Weekly / Monthly)
+- gRPC API access through Envoy JSON transcoding endpoint
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run dev         # start Vite dev server
+npm run build       # production build
+npm run lint        # lint sources
+npm run test        # run frontend tests once
+npm run test:watch  # run frontend tests in watch mode
+npm run preview     # preview built app
+```
 
-## Expanding the ESLint configuration
+## Environment Variables
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Copy `.env.example` to `.env` and adjust values if needed.
+
+```env
+VITE_GRPC_WEB_URL=http://localhost:8080
+VITE_USER_ID=demo-user
+```
+
+## Running Locally
+
+From repository root:
+
+```bash
+npm install
+npm run dev:backend
+npm run dev:frontend
+```
+
+Frontend URL: `http://localhost:5173`

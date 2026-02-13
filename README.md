@@ -5,6 +5,10 @@ Project layout uses:
 - `client/` for the frontend app
 - `envoy/` for gRPC-Web proxy configuration
 
+## UI Preview
+
+![Scheduler UI Preview](docs/screenshots/scheduler-home.svg)
+
 ## Prerequisites
 
 - Docker + Docker Compose

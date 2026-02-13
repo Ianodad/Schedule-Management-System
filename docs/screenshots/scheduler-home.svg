@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Schedule Management System UI preview">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0b1220" />
+      <stop offset="100%" stop-color="#132548" />
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)" />
+  <text x="56" y="72" fill="#dbeafe" font-size="34" font-family="Segoe UI, Arial">Schedule Management System</text>
+  <text x="56" y="104" fill="#9fb2cd" font-size="18" font-family="Segoe UI, Arial">Calendar + agenda + create/edit appointment modals</text>
+
+  <rect x="56" y="142" width="820" height="520" rx="14" fill="#0f1b30" stroke="#27426e" />
+  <text x="86" y="180" fill="#dbeafe" font-size="22" font-family="Segoe UI, Arial">February 2026</text>
+  <g fill="#92a4be" font-size="14" font-family="Segoe UI, Arial">
+    <text x="88" y="212">Sun</text><text x="196" y="212">Mon</text><text x="304" y="212">Tue</text><text x="412" y="212">Wed</text><text x="520" y="212">Thu</text><text x="628" y="212">Fri</text><text x="736" y="212">Sat</text>
+  </g>
+
+  <g>
+    <rect x="84" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="196" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="308" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="420" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="532" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="644" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="756" y="228" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+
+    <rect x="84" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="196" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="308" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="420" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#60a5fa" />
+    <rect x="532" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="644" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+    <rect x="756" y="318" width="108" height="84" rx="10" fill="#12213a" stroke="#2b4269" />
+  </g>
+
+  <rect x="420" y="346" width="84" height="18" rx="9" fill="#1d3a63" />
+  <text x="426" y="359" fill="#dbeafe" font-size="11" font-family="Segoe UI, Arial">10:00 Standup</text>
+  <rect x="420" y="368" width="92" height="18" rx="9" fill="#1d3a63" />
+  <text x="426" y="381" fill="#dbeafe" font-size="11" font-family="Segoe UI, Arial">14:00 Planning</text>
+
+  <rect x="904" y="142" width="320" height="520" rx="14" fill="#0f1b30" stroke="#27426e" />
+  <text x="928" y="182" fill="#dbeafe" font-size="20" font-family="Segoe UI, Arial">Agenda: Thu, Feb 13</text>
+
+  <rect x="928" y="220" width="272" height="96" rx="12" fill="#12213a" stroke="#2b4269" />
+  <text x="948" y="252" fill="#dbeafe" font-size="16" font-family="Segoe UI, Arial">Daily Standup</text>
+  <text x="948" y="278" fill="#9fb2cd" font-size="14" font-family="Segoe UI, Arial">10:00 AM - 11:00 AM · Zoom</text>
+
+  <rect x="928" y="334" width="272" height="96" rx="12" fill="#12213a" stroke="#2b4269" />
+  <text x="948" y="366" fill="#dbeafe" font-size="16" font-family="Segoe UI, Arial">Product Planning</text>
+  <text x="948" y="392" fill="#9fb2cd" font-size="14" font-family="Segoe UI, Arial">2:00 PM - 3:00 PM · Room A</text>
+
+  <rect x="928" y="456" width="182" height="40" rx="10" fill="#2563eb" stroke="#2f70ed" />
+  <text x="968" y="482" fill="#eef4ff" font-size="15" font-family="Segoe UI, Arial">New Appointment</text>
+</svg>
