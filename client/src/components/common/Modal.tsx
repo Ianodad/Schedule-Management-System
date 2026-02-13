@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
 
 interface ModalProps extends PropsWithChildren {
   isOpen: boolean
@@ -6,20 +6,22 @@ interface ModalProps extends PropsWithChildren {
   title?: string
 }
 
-function Modal({ isOpen, onClose, title, children }: ModalProps): JSX.Element | null {
+function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) {
     return null
   }
 
   return (
-    <div role="dialog" aria-modal="true">
-      <div>
-        {title ? <h2>{title}</h2> : null}
-        <button onClick={onClose} aria-label="Close modal">
-          Close
-        </button>
+    <div className="modal-overlay" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="modal-card" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-header">
+          {title ? <h2>{title}</h2> : null}
+          <button className="ghost-btn" onClick={onClose} aria-label="Close modal">
+            Close
+          </button>
+        </div>
+        <div className="modal-body">{children}</div>
       </div>
-      <div>{children}</div>
     </div>
   )
 }

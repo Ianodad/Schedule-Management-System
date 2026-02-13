@@ -29,7 +29,7 @@ export function useAppointments() {
         status,
         limit: 100,
       })
-      setAppointments(response.appointments)
+      setAppointments(response.appointments ?? [])
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load appointments'
       setError(message)
