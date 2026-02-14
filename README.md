@@ -64,7 +64,6 @@ npm run verify:e2e
 Generate 100 realistic test appointments spanning 2 years (including recurring appointments):
 
 ```bash
-cd server
 make seed
 ```
 
@@ -79,6 +78,17 @@ This creates:
 Clear all appointments and events from the database:
 
 ```bash
-cd server
 make reset
+```
+
+## Development Commands
+
+From the root directory:
+
+```bash
+make install    # Install all dependencies (Go + npm)
+make dev        # Start full stack with Docker Compose
+make test       # Run server tests
+make proto      # Regenerate protobuf files
+make clean      # Clean everything (Docker volumes, builds, node_modules)
 ```
