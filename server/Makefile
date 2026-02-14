@@ -1,4 +1,4 @@
-.PHONY: test run postgres-up postgres-down proto
+.PHONY: test run postgres-up postgres-down proto seed reset
 
 proto:
 	PATH=$(HOME)/bin:$(PATH) protoc --go_out=. --go_opt=paths=source_relative \
@@ -16,3 +16,9 @@ postgres-up:
 
 postgres-down:
 	docker compose stop postgres
+
+seed:
+	go run ./cmd/seed
+
+reset:
+	go run ./cmd/reset

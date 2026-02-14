@@ -56,3 +56,29 @@ docker compose down -v
 docker compose up --build -d
 npm run verify:e2e
 ```
+
+## Database Management
+
+### Seed Test Data
+
+Generate 100 realistic test appointments spanning 2 years (including recurring appointments):
+
+```bash
+cd server
+make seed
+```
+
+This creates:
+- 20 recurring appointments (daily, weekly, and monthly patterns)
+- 80 regular appointments with varied statuses
+- Realistic business hours scheduling (8 AM - 5 PM, weekdays)
+- Diverse meeting types, locations, and attendees
+
+### Reset Database
+
+Clear all appointments and events from the database:
+
+```bash
+cd server
+make reset
+```
