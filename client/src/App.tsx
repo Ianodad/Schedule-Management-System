@@ -792,6 +792,7 @@ function MonthView({ currentDate, appointmentsByDay, onDateClick, onEventClick }
 }
 
 function App() {
+  // Data lifecycle remains backed by gRPC hooks (load/create/update/delete/conflicts).
   const {
     appointments,
     loading,
@@ -814,6 +815,7 @@ function App() {
   useRealtimeUpdates(USER_ID, handleStreamEvent)
 
   const now = new Date()
+  // Main calendar UX state for the redesigned day/month experience.
   const [currentDate, setCurrentDate] = useState(now)
   const [selectedDate, setSelectedDate] = useState(now)
   const [viewMode, setViewMode] = useState<ViewMode>('day')
@@ -827,6 +829,7 @@ function App() {
     return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
   })
 
+  // Full create/edit modal state.
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null)
   const [modalFormState, setModalFormState] = useState<AppointmentFormState>(() =>
@@ -835,6 +838,7 @@ function App() {
   const [modalError, setModalError] = useState<string | null>(null)
   const [modalConflictInfo, setModalConflictInfo] = useState<ConflictInfo | null>(null)
 
+  // Quick add state for slot-click popover workflow.
   const [quickAddPos, setQuickAddPos] = useState<{ top: number; left: number } | null>(null)
   const [quickAddDate, setQuickAddDate] = useState<Date | null>(null)
 
