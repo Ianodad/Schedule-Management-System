@@ -12,7 +12,7 @@ Project layout uses:
 ## Prerequisites
 
 - Docker + Docker Compose
-- Node.js 20+ and npm
+- Node.js 20+ and npm (use `nvm use` in client/ directory)
 
 ## Structure
 
@@ -22,10 +22,14 @@ Project layout uses:
 - `docker-compose.yml`: local multi-service orchestration.
 - `DECISIONS.md`: architecture and tradeoff notes.
 
-## Local Run (Docker Compose)
+## Quick Start
+
+### Option 1: Full Stack with Docker (Recommended)
+
+Start all services (database, server, envoy, client) with one command:
 
 ```bash
-docker compose up --build
+make dev
 ```
 
 Expected endpoints:
@@ -33,6 +37,45 @@ Expected endpoints:
 - Envoy gRPC-Web: `http://localhost:8080`
 - Envoy admin: `http://localhost:9901`
 - Server gRPC: `localhost:50051`
+
+### Option 2: Local Development (Faster Iteration)
+
+For faster frontend development with hot reload:
+
+```bash
+# 1. Install dependencies
+make install
+
+# 2. Start backend services (database, server, envoy)
+docker compose up postgres server envoy -d
+
+# 3. Start frontend dev server (in new terminal)
+cd client
+npm run dev
+```
+
+This runs the React dev server locally while backend runs in Docker.
+
+**Using nvm (recommended):**
+```bash
+cd client
+nvm use          # Auto-detects Node 20 from .nvmrc
+npm run dev
+```
+
+### Seed Test Data (Optional)
+
+Populate the database with 100 realistic test appointments:
+
+```bash
+make seed
+```
+
+Clear the database:
+
+```bash
+make reset
+```
 
 ## Clean Bootstrap Verification
 
