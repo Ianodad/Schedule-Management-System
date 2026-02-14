@@ -18,7 +18,7 @@ postgres-down:
 	docker compose stop postgres
 
 seed:
-	go run ./cmd/seed
+	DB_PORT=5433 go run ./cmd/seed
 
 reset:
-	go run ./cmd/reset
+	DB_PORT=5433 go run ./cmd/reset
