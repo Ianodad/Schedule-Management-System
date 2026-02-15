@@ -1,6 +1,7 @@
 # Schedule Management System
 
 Project layout uses:
+
 - `server/` for the backend gRPC service
 - `client/` for the frontend app
 - `envoy/` for gRPC-Web proxy configuration
@@ -8,6 +9,20 @@ Project layout uses:
 ## UI Preview
 
 ![Scheduler UI Preview](docs/screenshots/scheduler-home.svg)
+
+## New UI Changes
+
+Recent UI updates include:
+
+- Refined scheduling dashboard layout for clearer appointment visibility.
+- Improved form and interaction flow for creating and managing appointments.
+- More consistent component styling across calendar, appointment, and common UI sections.
+
+### Screenshot Placeholders
+
+![UI Screenshot 1 - Dashboard](docs/screenshots/ui-change-01.png)
+![UI Screenshot 2 - Appointment Flow](docs/screenshots/ui-change-02.png)
+![UI Screenshot 3 - Dark Mode](docs/screenshots/ui-change-03.png)
 
 ## Prerequisites
 
@@ -33,6 +48,7 @@ make dev
 ```
 
 Expected endpoints:
+
 - Client: `http://localhost:5173`
 - Envoy gRPC-Web: `http://localhost:8080`
 - Envoy admin: `http://localhost:9901`
@@ -57,6 +73,7 @@ npm run dev
 This runs the React dev server locally while backend runs in Docker.
 
 **Using nvm (recommended):**
+
 ```bash
 cd client
 nvm use          # Auto-detects Node 20 from .nvmrc
@@ -88,6 +105,7 @@ npm run verify:e2e
 ```
 
 The `verify:e2e` command runs `scripts/verify_envoy_connectivity.sh` and validates:
+
 - Create appointment (via Envoy)
 - List appointments (via Envoy)
 - Delete appointment (via Envoy)
@@ -111,6 +129,7 @@ make seed
 ```
 
 This creates:
+
 - 20 recurring appointments (daily, weekly, and monthly patterns)
 - 80 regular appointments with varied statuses
 - Realistic business hours scheduling (8 AM - 5 PM, weekdays)

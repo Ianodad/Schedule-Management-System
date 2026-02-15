@@ -15,5 +15,11 @@ server/bin/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# AI assistant metadata
+.claude/
+**/.claude/
+CLAUDE.md
+**/CLAUDE.md
 CLADDE.md
-.claude
+**/CLADDE.md
