@@ -1113,7 +1113,7 @@ function App() {
             <CalendarIcon size={30} />
             <div>
               <strong>Schedule Management</strong>
-              <p>Merge of current actions + redesigned UI</p>
+              <p>Plan, organize, and manage your calendar</p>
             </div>
           </div>
 
